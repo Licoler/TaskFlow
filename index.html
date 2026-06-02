@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport"
   content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>TodoMVC Todo List Example in VanillaJS!</title>
+  <title>TaskFlow</title>
   <link rel="shortcut icon"
   href="lib/favicon.ico" type="image/x-icon">
 </head>
@@ -15,7 +15,9 @@
   <link rel="stylesheet" href="lib/todomvc-app.css">
   <script src="lib/elmish.js"></script>
   <script src="lib/todo-app.js"></script>
+  <script src="lib/taskflow-api.js"></script>
   <script>
+    window.TASKFLOW_API_URL = window.TASKFLOW_API_URL || 'http://localhost:3000';
     var model = {
       todos: [
         // { id: 0, title: "Make something people want.", done: false },
@@ -25,7 +27,7 @@
       hash: '#/', // the "route" to display
       // editing: 2 // edit the 3rd todo list item (which has id == 2)
     };
-    mount(model, update, view, 'app', subscriptions);
+    mountTaskFlow(model, 'app');
   </script>
 
   <!-- Below this point is all related to the Tests for the App -->

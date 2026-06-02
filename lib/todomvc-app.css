@@ -353,6 +353,77 @@ html .clear-completed:active {
 	text-decoration: underline;
 }
 
+.auth-app {
+	padding-bottom: 28px;
+}
+
+.auth-form {
+	padding: 28px 32px 0;
+}
+
+.auth-input {
+	box-sizing: border-box;
+	display: block;
+	width: 100%;
+	margin: 0 0 14px;
+	padding: 14px 16px;
+	border: 1px solid #ededed;
+	font-size: 20px;
+	font-family: inherit;
+	font-weight: inherit;
+	color: inherit;
+}
+
+.auth-submit {
+	width: 100%;
+	margin-top: 4px;
+	padding: 13px 16px;
+	border-radius: 3px;
+	background: #b83f45;
+	color: #fff;
+	cursor: pointer;
+	font-size: 16px;
+}
+
+.auth-submit:disabled {
+	cursor: default;
+	opacity: 0.6;
+}
+
+.auth-switch {
+	display: block;
+	margin: 18px auto 0;
+	color: #777;
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.auth-error,
+.taskflow-error {
+	min-height: 20px;
+	margin: 16px 0 0;
+	color: #b83f45;
+	text-align: center;
+}
+
+.taskflow-session {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin: 40px 0 -90px;
+	color: #777;
+}
+
+.taskflow-session button {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.taskflow-error {
+	margin-top: 100px;
+	margin-bottom: -105px;
+}
+
 /*
 	Hack to remove background from Mobile Safari.
 	Can't use it globally since it destroys checkboxes in Firefox
