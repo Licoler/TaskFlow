@@ -4,7 +4,7 @@
 
 TaskFlow is a full-stack todo app built from a vanilla JavaScript TodoMVC-style frontend and a Node.js API. Users can register, log in, and manage their own tasks through JWT-authenticated API requests backed by PostgreSQL.
 
-Live deploy: [https://taskflow-licoler.vercel.app](task-flow-two-dun.vercel.app)
+Live deploy: [https://taskflow-licoler.vercel.app](https://task-flow-two-dun.vercel.app/#/)
 
 ## Tech Stack
 
