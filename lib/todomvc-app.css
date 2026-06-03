@@ -1,985 +1,547 @@
 :root {
-	--bg: #0a0a0a;
-	--bg-card: #111113;
-	--bg-elevated: #151519;
-	--bg-hover: #1a1a1f;
-	--border: rgba(255, 255, 255, 0.08);
-	--border-hover: rgba(255, 255, 255, 0.15);
-	--accent: #6366f1;
-	--accent-hover: #4f46e5;
-	--accent-blue: #3b82f6;
-	--text-primary: #f1f0ef;
-	--text-secondary: #888784;
-	--text-muted: #555452;
-	--danger: #fb7185;
-	--sidebar-width: 220px;
-	--ease: 200ms ease;
+  --bg: #0a0a0a;
+  --bg-card: rgba(18, 18, 24, 0.92);
+  --bg-elevated: #1a1a24;
+  --bg-hover: rgba(30, 30, 40, 0.9);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.2);
+  --accent: #8b5cf6;
+  --accent-hover: #7c3aed;
+  --accent-blue: #3b82f6;
+  --text-primary: #f1f0ef;
+  --text-secondary: #a1a1aa;
+  --text-muted: #6b7280;
+  --danger: #f43f5e;
+  --sidebar-width: 240px;
+  --ease: 280ms cubic-bezier(0.2, 0.9, 0.4, 1.1);
 }
 
 * {
-	box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 html,
 body {
-	margin: 0;
-	min-height: 100%;
-	background: var(--bg);
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
 }
 
 body {
-	min-width: 320px;
-	max-width: none;
-	color: var(--text-primary);
-	font: 400 15px/1.6 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-	letter-spacing: 0;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+  min-width: 320px;
+  color: var(--text-primary);
+  font: 400 16px/1.5 "Inter", system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
 }
 
-body::before {
-	position: fixed;
-	inset: 0;
-	z-index: -2;
-	content: "";
-	background:
-		radial-gradient(circle at 18% 12%, rgba(99, 102, 241, 0.2), transparent 28%),
-		radial-gradient(circle at 82% 8%, rgba(59, 130, 246, 0.13), transparent 30%),
-		linear-gradient(180deg, #0f0f10 0%, #0a0a0a 44%, #050505 100%);
+/* Canvas фон – интерактивные символы */
+#canvas-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.35;
 }
 
-body::after {
-	position: fixed;
-	inset: 0;
-	z-index: -1;
-	pointer-events: none;
-	content: "";
-	background-image:
-		linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-		linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-	background-size: 48px 48px;
-	mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent 70%);
+/* Общие анимации */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+}
+
+@keyframes checkboxPop {
+  0% {
+    transform: scale(0.8);
+  }
+  70% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 button,
 input,
 a,
 label {
-	transition:
-		background-color var(--ease),
-		border-color var(--ease),
-		box-shadow var(--ease),
-		color var(--ease),
-		opacity var(--ease),
-		transform var(--ease);
+  transition: all var(--ease);
 }
 
 button {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	background: none;
-	color: inherit;
-	font: inherit;
-	cursor: pointer;
-	-webkit-appearance: none;
-	appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
 }
 
-button:hover {
-	transform: translateY(-1px);
-}
-
-button:disabled {
-	cursor: default;
-	opacity: 0.65;
-	transform: none;
+button:active {
+  transform: scale(0.97);
 }
 
 input {
-	font: inherit;
-	color: var(--text-primary);
+  font: inherit;
+  color: var(--text-primary);
+  background: transparent;
 }
 
 input::placeholder {
-	color: var(--text-muted);
-	opacity: 1;
-}
-
-:focus {
-	outline: 0;
+  color: var(--text-muted);
 }
 
 :focus-visible {
-	outline: 2px solid rgba(99, 102, 241, 0.55);
-	outline-offset: 3px;
-}
-
-.hidden {
-	display: none;
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 #app {
-	min-height: 100vh;
+  min-height: 100vh;
 }
 
 #test-app {
-	display: none;
+  display: none;
 }
 
-.todoapp {
-	position: relative;
-	color: var(--text-primary);
-}
-
-/* Auth screen */
-
+/* Auth screen – центрирование, без наложений */
 .auth-app {
-	width: min(400px, calc(100vw - 40px));
-	margin: clamp(72px, 12vh, 120px) auto 40px;
-	padding: 32px;
-	overflow: hidden;
-	border: 1px solid transparent;
-	border-radius: 20px;
-	background:
-		linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
-		linear-gradient(135deg, rgba(99, 102, 241, 0.72), rgba(59, 130, 246, 0.18), rgba(255, 255, 255, 0.08)) border-box;
-	box-shadow:
-		0 24px 80px rgba(0, 0, 0, 0.5),
-		0 0 64px rgba(99, 102, 241, 0.12);
-	animation: fadeInUp 480ms ease both;
-}
-
-.auth-app::before {
-	position: absolute;
-	inset: 0;
-	pointer-events: none;
-	content: "";
-	background:
-		radial-gradient(circle at 20% 0%, rgba(99, 102, 241, 0.18), transparent 34%),
-		linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 42%);
+  width: min(420px, calc(100vw - 40px));
+  margin: clamp(60px, 15vh, 140px) auto 40px;
+  padding: 36px 28px;
+  border-radius: 32px;
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  animation: fadeSlideUp 0.5s ease both;
 }
 
 .auth-app .header {
-	position: relative;
-	z-index: 1;
-	margin-bottom: 28px;
-	text-align: center;
+  margin-bottom: 28px;
+  text-align: center;
 }
 
 .auth-app h1 {
-	position: static;
-	width: auto;
-	margin: 0;
-	color: var(--text-primary);
-	font-size: 30px;
-	font-weight: 700;
-	letter-spacing: -0.02em;
-	line-height: 1.1;
-	text-align: center;
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .auth-app h1::before {
-	display: inline-grid;
-	width: 34px;
-	height: 34px;
-	margin-right: 10px;
-	border: 1px solid rgba(255, 255, 255, 0.14);
-	border-radius: 10px;
-	background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(59, 130, 246, 0.1));
-	box-shadow: 0 0 30px rgba(99, 102, 241, 0.24);
-	color: #a5b4fc;
-	content: "✦";
-	font-size: 17px;
-	place-items: center;
-	vertical-align: 5px;
+  display: inline-block;
+  width: 36px;
+  height: 36px;
+  margin-right: 12px;
+  background: linear-gradient(135deg, var(--accent), #a78bfa);
+  border-radius: 14px;
+  content: "✦";
+  font-size: 18px;
+  line-height: 36px;
+  vertical-align: middle;
 }
 
 .auth-form {
-	position: relative;
-	z-index: 1;
-	display: grid;
-	gap: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .auth-input {
-	width: 100%;
-	min-height: 52px;
-	padding: 0 15px;
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	border-radius: 12px;
-	background: #1a1a1f;
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
-	font-size: 15px;
-}
-
-.auth-input:hover {
-	border-color: var(--border-hover);
-	background: #1d1d23;
+  width: 100%;
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  font-size: 15px;
 }
 
 .auth-input:focus {
-	border-color: rgba(99, 102, 241, 0.8);
-	box-shadow:
-		0 0 0 4px rgba(99, 102, 241, 0.16),
-		inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
 }
 
 .auth-submit {
-	min-height: 52px;
-	margin-top: 4px;
-	border-radius: 12px;
-	background: linear-gradient(180deg, var(--accent), var(--accent-hover));
-	box-shadow:
-		0 12px 32px rgba(99, 102, 241, 0.32),
-		inset 0 1px 0 rgba(255, 255, 255, 0.18);
-	color: #fff;
-	font-size: 15px;
-	font-weight: 600;
+  padding: 14px;
+  border-radius: 40px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  font-weight: 600;
+  color: white;
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
 }
 
 .auth-submit:hover {
-	filter: brightness(1.07);
-	box-shadow:
-		0 16px 42px rgba(99, 102, 241, 0.4),
-		inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  filter: brightness(1.05);
+  transform: translateY(-2px);
 }
 
 .auth-switch {
-	justify-self: center;
-	margin-top: 3px;
-	color: var(--text-secondary);
-	font-size: 13px;
-	text-decoration: none;
-}
-
-.auth-switch:hover {
-	color: var(--text-primary);
-	text-decoration: underline;
-	text-underline-offset: 4px;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 .auth-error,
 .taskflow-error {
-	min-height: 20px;
-	margin: 0;
-	color: var(--danger);
-	font-size: 13px;
-	text-align: center;
+  color: var(--danger);
+  font-size: 13px;
+  text-align: center;
+  margin-top: 8px;
 }
 
-/* App shell */
-
+/* Основная оболочка – грид без наложений */
 #app > div:has(.taskflow-session) {
-	display: grid;
-	grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
-	min-height: 100vh;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: row;
 }
 
-#app > div:has(.taskflow-session)::before {
-	position: fixed;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	z-index: 8;
-	width: var(--sidebar-width);
-	border-right: 1px solid var(--border);
-	background:
-		linear-gradient(180deg, rgba(17, 17, 19, 0.98), rgba(10, 10, 10, 0.98)),
-		var(--bg-card);
-	box-shadow: 20px 0 60px rgba(0, 0, 0, 0.28);
-	content: "";
+@media (min-width: 769px) {
+  #app > div:has(.taskflow-session) {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr;
+  }
 }
 
-#app > div:has(.taskflow-session) .todoapp:not(.auth-app) {
-	grid-column: 2;
-	width: min(100%, 980px);
-	margin: 0 auto;
-	padding: 44px clamp(28px, 5vw, 64px) 64px;
-	background: transparent;
-	box-shadow: none;
-}
-
+/* Боковая панель (системная) */
 .taskflow-session {
-	position: fixed;
-	bottom: 18px;
-	left: 14px;
-	z-index: 21;
-	display: grid;
-	width: calc(var(--sidebar-width) - 28px);
-	gap: 10px;
-	padding: 14px;
-	border: 1px solid var(--border);
-	border-radius: 14px;
-	background: rgba(255, 255, 255, 0.035);
-	color: var(--text-secondary);
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  position: fixed;
+  bottom: 20px;
+  left: 16px;
+  z-index: 30;
+  width: calc(var(--sidebar-width) - 32px);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 16px;
+}
+
+@media (min-width: 769px) {
+  .taskflow-session {
+    position: sticky;
+    top: 20px;
+    margin: 20px 16px;
+    left: 0;
+    width: auto;
+  }
 }
 
 .taskflow-session span {
-	overflow: hidden;
-	color: var(--text-primary);
-	font-size: 13px;
-	font-weight: 500;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.taskflow-session span::before {
-	display: block;
-	margin-bottom: 2px;
-	color: var(--text-muted);
-	content: "Signed in";
-	font-size: 11px;
-	font-weight: 600;
-	letter-spacing: 0.08em;
-	line-height: 1.2;
-	text-transform: uppercase;
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  word-break: break-all;
 }
 
 .taskflow-session button {
-	width: 100%;
-	padding: 8px 10px;
-	border: 1px solid var(--border);
-	border-radius: 10px;
-	background: rgba(255, 255, 255, 0.04);
-	color: var(--text-secondary);
-	font-size: 13px;
-	text-align: center;
-	text-decoration: none;
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px 12px;
+  border-radius: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  font-size: 13px;
 }
 
 .taskflow-session button:hover {
-	border-color: var(--border-hover);
-	background: var(--bg-hover);
-	color: var(--text-primary);
+  background: var(--danger);
+  border-color: var(--danger);
+  color: white;
 }
 
-/* Sidebar navigation rendered from existing footer filters */
-
-#app > div > .todoapp:not(.auth-app) .footer {
-	position: fixed;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	z-index: 20;
-	display: flex !important;
-	width: var(--sidebar-width);
-	height: auto;
-	padding: 82px 14px 154px;
-	border: 0;
-	background: transparent;
-	color: var(--text-secondary);
-	text-align: left;
+/* Контент – плавающая карточка */
+.todoapp:not(.auth-app) {
+  flex: 1;
+  width: 100%;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 24px 20px 48px;
+  background: rgba(10, 10, 15, 0.7);
+  backdrop-filter: blur(16px);
+  border-radius: 40px;
+  border: 1px solid var(--border);
+  box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s;
 }
 
-#app > div > .todoapp:not(.auth-app) .footer::before {
-	position: fixed;
-	top: 18px;
-	left: 16px;
-	z-index: 22;
-	display: flex;
-	align-items: center;
-	gap: 10px;
-	width: calc(var(--sidebar-width) - 32px);
-	color: var(--text-primary);
-	content: "✦ TaskFlow";
-	font-size: 17px;
-	font-weight: 700;
-	letter-spacing: -0.02em;
-}
-
-#app > div > .todoapp:not(.auth-app) .footer::after {
-	position: fixed;
-	top: 58px;
-	left: 16px;
-	z-index: 22;
-	color: var(--text-muted);
-	content: "Workspace";
-	font-size: 11px;
-	font-weight: 600;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-}
-
-.filters {
-	position: static;
-	display: grid;
-	width: 100%;
-	height: max-content;
-	gap: 6px;
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
-
-.filters li {
-	display: block;
-}
-
-.filters li a {
-	display: flex;
-	align-items: center;
-	min-height: 38px;
-	margin: 0;
-	padding: 0 12px;
-	border: 1px solid transparent;
-	border-radius: 999px;
-	color: var(--text-secondary);
-	font-size: 0;
-	font-weight: 500;
-	text-decoration: none;
-}
-
-.filters li a::before {
-	font-size: 14px;
-	line-height: 1;
-}
-
-#all::before {
-	content: "All Tasks";
-}
-
-#active::before {
-	content: "Active";
-}
-
-#completed::before {
-	content: "Completed";
-}
-
-.filters li a:hover {
-	border-color: var(--border);
-	background: rgba(255, 255, 255, 0.04);
-	color: var(--text-primary);
-}
-
-.filters li a.selected {
-	border-color: rgba(99, 102, 241, 0.28);
-	background: rgba(99, 102, 241, 0.16);
-	color: #dbe4ff;
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.todo-count {
-	position: fixed;
-	top: 52px;
-	left: calc(var(--sidebar-width) + clamp(28px, 5vw, 64px) + 148px);
-	z-index: 5;
-	display: inline-flex;
-	align-items: center;
-	height: 28px;
-	padding: 0 10px;
-	border: 1px solid var(--border);
-	border-radius: 999px;
-	background: rgba(255, 255, 255, 0.045);
-	color: var(--text-secondary);
-	font-size: 12px;
-	font-weight: 500;
-	backdrop-filter: blur(16px);
-}
-
-.todo-count strong {
-	margin-right: 4px;
-	color: var(--text-primary);
-	font-weight: 700;
-}
-
-.clear-completed,
-html .clear-completed:active {
-	position: fixed;
-	bottom: 126px;
-	left: 14px;
-	z-index: 22;
-	width: calc(var(--sidebar-width) - 28px);
-	min-height: 38px;
-	padding: 0 10px;
-	border: 1px solid var(--border);
-	border-radius: 10px;
-	background: rgba(255, 255, 255, 0.035);
-	color: var(--text-secondary);
-	font-size: 12px;
-	font-weight: 600;
-	line-height: 1.2;
-	text-align: center;
-	text-decoration: none;
-}
-
-.clear-completed:hover {
-	border-color: rgba(251, 113, 133, 0.24);
-	background: rgba(251, 113, 133, 0.08);
-	color: #fecdd3;
-	text-decoration: none;
-}
-
-/* Main content */
-
+/* Заголовок */
 .todoapp:not(.auth-app) .header {
-	position: relative;
-	display: grid;
-	gap: 24px;
-	margin-bottom: 24px;
+  margin-bottom: 32px;
+  position: relative;
 }
 
 .todoapp:not(.auth-app) h1 {
-	position: relative;
-	top: auto;
-	width: auto;
-	margin: 0;
-	color: transparent;
-	font-size: 32px;
-	font-weight: 700;
-	letter-spacing: -0.02em;
-	line-height: 1.1;
-	text-align: left;
+  margin: 0 0 20px 0;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .todoapp:not(.auth-app) h1::before {
-	color: var(--text-primary);
-	content: "My Tasks";
-}
-
-.new-todo,
-.edit {
-	width: 100%;
-	border: 1px solid var(--border);
-	border-radius: 16px;
-	background: rgba(17, 17, 19, 0.86);
-	box-shadow:
-		0 18px 50px rgba(0, 0, 0, 0.22),
-		inset 0 1px 0 rgba(255, 255, 255, 0.04);
-	color: var(--text-primary);
-	font-family: inherit;
-	font-size: 15px;
-	font-weight: 400;
-	line-height: 1.5;
+  content: "📋 ";
 }
 
 .new-todo {
-	height: 58px;
-	padding: 0 18px 0 48px;
+  width: 100%;
+  padding: 18px 24px 18px 56px;
+  border-radius: 60px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.4);
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.new-todo:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
 }
 
 .todoapp:not(.auth-app) .header::before {
-	position: absolute;
-	bottom: 17px;
-	left: 18px;
-	z-index: 2;
-	color: var(--accent);
-	content: "+";
-	font-size: 22px;
-	font-weight: 500;
-	line-height: 1;
+  content: "✨";
+  position: absolute;
+  left: 24px;
+  bottom: 16px;
+  font-size: 20px;
+  pointer-events: none;
 }
 
-.todoapp:not(.auth-app) .header::after {
-	position: absolute;
-	bottom: 17px;
-	left: 48px;
-	z-index: 1;
-	pointer-events: none;
-	color: var(--text-muted);
-	content: "Add a task...";
-	font-size: 15px;
-	line-height: 24px;
-	transition: opacity var(--ease), transform var(--ease);
-}
-
-.todoapp:not(.auth-app) .header:has(.new-todo:focus)::after,
-.todoapp:not(.auth-app) .header:has(.new-todo:not(:placeholder-shown))::after {
-	opacity: 0;
-	transform: translateX(4px);
-}
-
-.new-todo::placeholder {
-	color: transparent;
-}
-
-.new-todo:hover,
-.edit:hover {
-	border-color: var(--border-hover);
-	background: rgba(26, 26, 31, 0.92);
-}
-
-.new-todo:focus,
-.edit:focus {
-	border-color: rgba(99, 102, 241, 0.8);
-	box-shadow:
-		0 0 0 4px rgba(99, 102, 241, 0.14),
-		0 22px 60px rgba(0, 0, 0, 0.28),
-		inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.main {
-	position: relative;
-	z-index: 2;
-	border: 0;
-}
-
-.toggle-all {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	opacity: 0;
-	pointer-events: none;
-}
-
-.toggle-all + label {
-	position: absolute;
-	top: -80px;
-	right: 0;
-	left: auto;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: auto;
-	height: 30px;
-	padding: 0 10px;
-	border: 1px solid var(--border);
-	border-radius: 999px;
-	background: rgba(255, 255, 255, 0.035);
-	color: var(--text-secondary);
-	font-size: 12px;
-	font-weight: 600;
-	line-height: 1;
-	transform: none;
-}
-
-.toggle-all + label::before {
-	content: "Complete all";
-}
-
-.toggle-all:checked + label {
-	border-color: rgba(99, 102, 241, 0.24);
-	background: rgba(99, 102, 241, 0.14);
-	color: #c7d2fe;
-}
-
+/* Список задач */
 .todo-list {
-	margin: 0;
-	padding: 0;
-	overflow: hidden;
-	border: 1px solid var(--border);
-	border-radius: 18px;
-	background:
-		linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-		var(--bg-card);
-	box-shadow:
-		0 24px 70px rgba(0, 0, 0, 0.32),
-		inset 0 1px 0 rgba(255, 255, 255, 0.04);
-	list-style: none;
+  list-style: none;
+  margin: 28px 0 0;
+  padding: 0;
+  border-radius: 32px;
+  background: rgba(0, 0, 0, 0.3);
+  overflow: hidden;
 }
 
 .todo-list li {
-	position: relative;
-	min-height: 64px;
-	border-bottom: 1px solid var(--border);
-	background: rgba(255, 255, 255, 0.012);
-	animation: taskIn 260ms ease both;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  transition: all 0.2s;
+  animation: fadeSlideUp 0.25s ease;
 }
 
-.todo-list li:last-child {
-	border-bottom: 0;
-}
-
-.todo-list li:hover {
-	background: rgba(255, 255, 255, 0.035);
-}
-
-.todo-list li.editing {
-	padding: 0;
-}
-
-.todo-list li.editing .view {
-	display: none;
+.todo-list li.removing {
+  animation: fadeOut 0.2s forwards;
 }
 
 .todo-list li .view {
-	position: relative;
-	min-height: 64px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
 }
 
 .todo-list li .toggle {
-	position: absolute;
-	top: 50%;
-	left: 18px;
-	z-index: 2;
-	width: 24px;
-	height: 24px;
-	margin: 0;
-	opacity: 0;
-	transform: translateY(-50%);
-	cursor: pointer;
-	-webkit-appearance: none;
-	appearance: none;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 50%;
+  border: 2px solid var(--border-hover);
+  background: transparent;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.todo-list li .toggle:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+  position: relative;
+}
+
+.todo-list li .toggle:checked::after {
+  content: "✓";
+  color: white;
+  display: block;
+  text-align: center;
+  line-height: 20px;
+  font-size: 14px;
 }
 
 .todo-list li .toggle + label {
-	position: relative;
-	display: block;
-	min-height: 64px;
-	padding: 20px 58px 20px 58px;
-	background-image: none;
-	color: var(--text-primary);
-	font-size: 15px;
-	font-weight: 500;
-	line-height: 1.45;
-	word-break: break-word;
+  flex: 1;
+  font-size: 16px;
+  font-weight: 500;
+  word-break: break-word;
+  transition: all 0.2s;
 }
 
-.todo-list li .toggle + label::before {
-	position: absolute;
-	top: 21px;
-	left: 18px;
-	width: 22px;
-	height: 22px;
-	border: 1px solid rgba(255, 255, 255, 0.18);
-	border-radius: 999px;
-	background: rgba(255, 255, 255, 0.03);
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-	content: "";
-}
-
-.todo-list li .toggle + label::after {
-	position: absolute;
-	top: 23px;
-	left: 25px;
-	color: #fff;
-	content: "✓";
-	font-size: 12px;
-	font-weight: 700;
-	line-height: 18px;
-	opacity: 0;
-	transform: scale(0.7);
-}
-
-.todo-list li .toggle:checked + label {
-	color: var(--text-muted);
-	text-decoration: line-through;
-}
-
-.todo-list li .toggle:checked + label::before {
-	border-color: var(--accent);
-	background: var(--accent);
-	box-shadow: 0 0 24px rgba(99, 102, 241, 0.35);
-	animation: checkboxBounce 280ms ease both;
-}
-
-.todo-list li .toggle:checked + label::after {
-	opacity: 1;
-	transform: scale(1);
-	transition: opacity var(--ease), transform var(--ease);
-}
-
-.todo-list li.completed label {
-	color: var(--text-muted);
-	text-decoration: line-through;
+.todo-list li.completed .toggle + label {
+  text-decoration: line-through;
+  color: var(--text-muted);
 }
 
 .todo-list li .destroy {
-	position: absolute;
-	top: 50%;
-	right: 14px;
-	z-index: 3;
-	display: grid;
-	width: 34px;
-	height: 34px;
-	margin: 0;
-	border: 1px solid transparent;
-	border-radius: 10px;
-	opacity: 0;
-	place-items: center;
-	transform: translateY(-50%) scale(0.96);
+  opacity: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--danger);
+  font-size: 20px;
+  line-height: 1;
+  transition: all 0.2s;
 }
 
-.todo-list li:hover .destroy,
-.todo-list li .destroy:focus-visible {
-	border-color: var(--border);
-	background: rgba(255, 255, 255, 0.045);
-	opacity: 1;
-	transform: translateY(-50%) scale(1);
+.todo-list li:hover .destroy {
+  opacity: 1;
 }
 
 .todo-list li .destroy:hover {
-	border-color: rgba(251, 113, 133, 0.26);
-	background: rgba(251, 113, 133, 0.1);
+  background: var(--danger);
+  color: white;
 }
 
-.todo-list li .destroy::after {
-	display: block;
-	width: 16px;
-	height: 16px;
-	background: var(--text-muted);
-	content: "";
-	mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-.7 11H7.7L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z'/%3E%3C/svg%3E") center / contain no-repeat;
-	-webkit-mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-.7 11H7.7L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+/* Footer / фильтры и счетчик */
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  gap: 16px;
 }
 
-.todo-list li .destroy:hover::after {
-	background: #fecdd3;
+.todo-count {
+  font-size: 14px;
+  color: var(--text-secondary);
 }
 
-.todo-list li .destroy:active {
-	transform: translateY(-50%) translateX(-8px) scale(0.94);
+.filters {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.filters li a {
+  padding: 6px 16px;
+  border-radius: 40px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.filters li a.selected {
+  background: var(--accent);
+  color: white;
+}
+
+.clear-completed {
+  padding: 6px 16px;
+  border-radius: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.clear-completed:hover {
+  background: var(--danger);
+  color: white;
+}
+
+/* Мобильная версия – без наложений */
+@media (max-width: 768px) {
+  #app > div:has(.taskflow-session) {
+    display: block;
+    padding: 0 16px;
+  }
+
+  .taskflow-session {
+    position: relative;
+    width: 100%;
+    margin: 16px 0 0;
+    bottom: auto;
+    left: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .taskflow-session button {
+    width: auto;
+    margin: 0;
+  }
+
+  .todoapp:not(.auth-app) {
+    margin: 20px auto;
+    padding: 20px 16px;
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .filters {
+    justify-content: center;
+  }
+
+  .todo-list li .view {
+    gap: 8px;
+  }
+
+  .todo-list li .destroy {
+    opacity: 0.6;
+  }
+}
+
+/* Анимация при добавлении задач через JS (dynamic) */
+.todo-list li {
+  transition: all 0.2s;
+}
+
+/* Стили для редактирования */
+.todo-list li.editing .view {
+  display: none;
 }
 
 .todo-list li .edit {
-	display: none;
+  display: none;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 28px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid var(--border);
+  color: white;
 }
 
 .todo-list li.editing .edit {
-	display: block;
-	width: calc(100% - 32px);
-	margin: 8px 16px;
-	padding: 14px 16px;
-}
-
-#app > div > .todoapp:not(.auth-app):has(#main[style*="none"])::after {
-	display: grid;
-	min-height: 260px;
-	margin-top: 24px;
-	border: 1px solid var(--border);
-	border-radius: 18px;
-	background:
-		linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-		var(--bg-card);
-	box-shadow:
-		0 24px 70px rgba(0, 0, 0, 0.28),
-		inset 0 1px 0 rgba(255, 255, 255, 0.04);
-	color: var(--text-secondary);
-	content: "✦\A No tasks yet\A Add your first task above.";
-	font-size: 15px;
-	line-height: 1.7;
-	place-items: center;
-	text-align: center;
-	white-space: pre;
-}
-
-.taskflow-error {
-	position: fixed;
-	top: 96px;
-	left: calc(var(--sidebar-width) + clamp(28px, 5vw, 64px));
-	right: clamp(28px, 5vw, 64px);
-	z-index: 30;
-	display: block;
-	padding: 12px 14px;
-	border: 1px solid rgba(251, 113, 133, 0.26);
-	border-radius: 12px;
-	background: rgba(127, 29, 29, 0.24);
-	backdrop-filter: blur(16px);
-	text-align: left;
-}
-
-@keyframes fadeInUp {
-	from {
-		opacity: 0;
-		transform: translateY(8px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-@keyframes taskIn {
-	from {
-		opacity: 0;
-		transform: translateY(-8px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-@keyframes checkboxBounce {
-	0% {
-		transform: scale(0.8);
-	}
-	62% {
-		transform: scale(1.1);
-	}
-	100% {
-		transform: scale(1);
-	}
-}
-
-@media (max-width: 760px) {
-	#app > div:has(.taskflow-session) {
-		display: block;
-	}
-
-	#app > div:has(.taskflow-session)::before {
-		display: none;
-	}
-
-	#app > div:has(.taskflow-session) .todoapp:not(.auth-app) {
-		width: 100%;
-		padding: 24px 16px 40px;
-	}
-
-	#app > div > .todoapp:not(.auth-app) .footer {
-		position: static;
-		width: auto;
-		height: auto;
-		margin-bottom: 20px;
-		padding: 60px 0 0;
-	}
-
-	#app > div > .todoapp:not(.auth-app) .footer::before,
-	#app > div > .todoapp:not(.auth-app) .footer::after {
-		position: absolute;
-		left: 16px;
-	}
-
-	#app > div > .todoapp:not(.auth-app) .footer::before {
-		top: 22px;
-	}
-
-	#app > div > .todoapp:not(.auth-app) .footer::after {
-		top: 58px;
-	}
-
-	.filters {
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		padding-top: 16px;
-	}
-
-	.filters li a {
-		justify-content: center;
-		padding: 0 8px;
-	}
-
-	.taskflow-session {
-		position: static;
-		width: auto;
-		margin: 16px;
-	}
-
-	.todo-count {
-		position: static;
-		margin-bottom: 16px;
-	}
-
-	.clear-completed,
-	html .clear-completed:active {
-		position: static;
-		width: 100%;
-		margin-top: 10px;
-	}
-
-	.todoapp:not(.auth-app) h1 {
-		font-size: 28px;
-	}
-
-	.toggle-all + label {
-		position: static;
-		justify-self: start;
-		margin-top: -10px;
-	}
-
-	.taskflow-error {
-		position: static;
-		margin: 0 16px 16px;
-	}
+  display: block;
+  margin: 12px 0;
 }

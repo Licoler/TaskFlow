@@ -2,38 +2,113 @@
 <html lang="en-GB" data-framework="javascript">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="viewport"
-  content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>TaskFlow</title>
-  <link rel="shortcut icon"
-  href="lib/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="lib/favicon.ico" type="image/x-icon">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-  <div id="app" class="taskflow-root"></div>
-  <!-- CSS Styles are 100% optional. but they make it look *much* nicer -->
   <link rel="stylesheet" href="lib/todomvc-common-base.css">
   <link rel="stylesheet" href="lib/todomvc-app.css">
+</head>
+<body>
+  <canvas id="canvas-bg"></canvas>
+  <div id="app" class="taskflow-root"></div>
+
   <script src="lib/elmish.js"></script>
   <script src="lib/todo-app.js"></script>
   <script src="lib/taskflow-api.js"></script>
   <script>
     window.TASKFLOW_API_URL = window.TASKFLOW_API_URL || 'http://localhost:3000';
     var model = {
-      todos: [
-        // { id: 0, title: "Make something people want.", done: false },
-        // { id: 1, title: "Bootstrap for as long as you can", done: false },
-        // { id: 2, title: "Let's solve our own problem", done: false }
-      ],
-      hash: '#/', // the "route" to display
-      // editing: 2 // edit the 3rd todo list item (which has id == 2)
+      todos: [],
+      hash: '#/'
     };
     mountTaskFlow(model, 'app');
   </script>
 
-  <!-- Below this point is all related to the Tests for the App -->
-  <div id="test-app"></div> <!-- Create a test-app div to mount the app -->
+  <!-- Интерактивный фон (canvas с символами) -->
+  <script>
+    (function() {
+      const canvas = document.getElementById('canvas-bg');
+      if (!canvas) return;
+      let ctx = canvas.getContext('2d');
+      let width = window.innerWidth;
+      let height = window.innerHeight;
+      let particles = [];
+      const SYMBOLS = ['✨', '⌨️', '⚡', '✧', '⟡', '●', '◯', '✶', '☄', '💻', '🖱️', '❄️', '🌀', '⎋', '⌘'];
+      let mouseX = width/2, mouseY = height/2;
+
+      function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+        initParticles();
+      }
+
+      function initParticles() {
+        particles = [];
+        const count = Math.min(180, Math.floor(width * height / 8000));
+        for (let i = 0; i < count; i++) {
+          particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            symbol: SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
+            size: 12 + Math.random() * 20,
+            baseX: Math.random() * width,
+            baseY: Math.random() * height,
+            speed: 0.02 + Math.random() * 0.03,
+          });
+        }
+      }
+
+      function animate() {
+        if (!ctx) return;
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = 'rgba(10, 10, 15, 0.1)';
+        ctx.fillRect(0, 0, width, height);
+        
+        for (let p of particles) {
+          let dx = mouseX - p.baseX;
+          let dy = mouseY - p.baseY;
+          let dist = Math.hypot(dx, dy);
+          let maxDist = 280;
+          let offsetX = 0, offsetY = 0;
+          if (dist < maxDist) {
+            let force = (1 - dist / maxDist) * 45;
+            let angle = Math.atan2(dy, dx);
+            offsetX = Math.cos(angle) * force;
+            offsetY = Math.sin(angle) * force;
+          }
+          let x = p.baseX + offsetX;
+          let y = p.baseY + offsetY;
+          ctx.font = `${p.size}px "SF Mono", monospace`;
+          ctx.fillStyle = `rgba(139, 92, 246, ${0.25 + (dist < maxDist ? 0.25 : 0.08)})`;
+          ctx.fillText(p.symbol, x, y);
+        }
+        requestAnimationFrame(animate);
+      }
+
+      function onMouseMove(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      }
+      function onTouchMove(e) {
+        if (e.touches.length) {
+          mouseX = e.touches[0].clientX;
+          mouseY = e.touches[0].clientY;
+        }
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('touchmove', onTouchMove);
+      resizeCanvas();
+      animate();
+    })();
+  </script>
+
+  <div id="test-app"></div>
 </body>
 </html>
