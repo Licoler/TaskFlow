@@ -2,11 +2,9 @@
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Licoler_TaskFlow&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Licoler_TaskFlow)
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/HASH/maintainability)](https://codeclimate.com/github/USERNAME/REPO)
-
 TaskFlow is a full-stack todo app built from a vanilla JavaScript TodoMVC-style frontend and a Node.js API. Users can register, log in, and manage their own tasks through JWT-authenticated API requests backed by PostgreSQL.
 
-Live deploy: [deploy link]
+Live deploy: [https://taskflow-licoler.vercel.app](task-flow-two-dun.vercel.app)
 
 ## Tech Stack
 
