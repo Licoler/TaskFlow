@@ -12,8 +12,12 @@
   --text-muted: #6b7280;
   --danger: #f43f5e;
   --success: #22c55e;
+  --warning: #eab308;
+  --personal: #3b82f6;
+  --work: #f97316;
+  --study: #22c55e;
   --sidebar-width: 260px;
-  --ease: 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  --ease: 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
 }
 
 * {
@@ -32,7 +36,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Canvas фон */
 #canvas-bg {
   position: fixed;
   top: 0;
@@ -44,7 +47,6 @@ body {
   opacity: 0.4;
 }
 
-/* Все остальное поверх фона */
 #app {
   position: relative;
   z-index: 1;
@@ -55,7 +57,7 @@ body {
 @keyframes fadeSlideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(15px);
   }
   to {
     opacity: 1;
@@ -66,11 +68,19 @@ body {
 @keyframes fadeOut {
   to {
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateX(-15px);
   }
 }
 
-/* Auth screen */
+.todo-item {
+  transition: all 0.2s ease;
+}
+
+.todo-item.removing {
+  animation: fadeOut 0.2s forwards;
+}
+
+/* Аутентификация */
 .auth-app {
   width: min(420px, 90vw);
   margin: 80px auto;
@@ -119,7 +129,7 @@ body {
   cursor: pointer;
 }
 
-/* Основной контейнер – флекс для мобилок, грид для десктопа */
+/* Основной контейнер */
 .app-container {
   display: flex;
   flex-direction: column;
@@ -133,7 +143,7 @@ body {
   }
 }
 
-/* Сайдбар (юзер + фильтры) – на мобилке сверху */
+/* Сайдбар */
 .sidebar {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(12px);
@@ -183,15 +193,15 @@ body {
   border-radius: 40px;
   font-size: 13px;
   cursor: pointer;
-  transition: all 0.2s;
 }
+
 .logout-btn:hover {
   background: var(--danger);
   border-color: var(--danger);
   color: white;
 }
 
-/* Фильтры – всегда видны */
+/* Фильтры (основные + категории) */
 .filters {
   display: flex;
   gap: 8px;
@@ -214,10 +224,32 @@ body {
   color: white;
 }
 
+.category-filters {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.category-btn {
+  background: rgba(255,255,255,0.05);
+  border: none;
+  padding: 4px 12px;
+  border-radius: 40px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.category-btn.active {
+  background: var(--accent);
+  color: white;
+}
+
 /* Основной контент */
 .main-content {
   padding: 24px 20px;
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
   width: 100%;
 }
@@ -229,10 +261,8 @@ body {
   border: 1px solid var(--border);
   padding: 28px 24px;
   box-shadow: 0 20px 35px -10px rgba(0,0,0,0.4);
-  transition: all 0.3s;
 }
 
-/* Заголовок и прогресс */
 .header-area {
   margin-bottom: 32px;
 }
@@ -241,11 +271,9 @@ body {
   font-size: 32px;
   font-weight: 700;
   margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
+/* Прогресс-бар */
 .progress-container {
   margin-top: 16px;
 }
@@ -254,7 +282,6 @@ body {
   background: rgba(255,255,255,0.1);
   border-radius: 40px;
   height: 8px;
-  width: 100%;
   overflow: hidden;
 }
 
@@ -274,7 +301,11 @@ body {
   color: var(--text-secondary);
 }
 
-/* Поле добавления */
+/* Поле ввода */
+.input-wrapper {
+  position: relative;
+}
+
 .new-todo {
   width: 100%;
   padding: 16px 20px 16px 52px;
@@ -290,10 +321,6 @@ body {
   border-color: var(--accent);
   outline: none;
   box-shadow: 0 0 0 3px rgba(139,92,246,0.2);
-}
-
-.input-wrapper {
-  position: relative;
 }
 
 .input-icon {
@@ -320,16 +347,13 @@ body {
   gap: 12px;
   padding: 12px 20px;
   border-bottom: 1px solid var(--border);
-  transition: background 0.2s, transform 0.2s;
+  transition: background 0.2s, opacity 0.2s;
   animation: fadeSlideUp 0.2s ease;
 }
 
-.todo-item.removing {
-  animation: fadeOut 0.2s forwards;
-}
-
-.todo-item:hover {
-  background: rgba(255,255,255,0.05);
+.todo-item.overdue {
+  border-left: 4px solid var(--danger);
+  background: rgba(244, 63, 94, 0.1);
 }
 
 .todo-checkbox {
@@ -341,7 +365,6 @@ body {
   background: transparent;
   cursor: pointer;
   transition: all 0.2s;
-  position: relative;
   flex-shrink: 0;
 }
 
@@ -354,10 +377,9 @@ body {
   content: "✓";
   color: white;
   font-size: 14px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  display: block;
+  text-align: center;
+  line-height: 18px;
 }
 
 .todo-title {
@@ -365,7 +387,6 @@ body {
   font-size: 16px;
   font-weight: 500;
   word-break: break-word;
-  transition: color 0.2s;
 }
 
 .completed .todo-title {
@@ -373,13 +394,33 @@ body {
   color: var(--text-muted);
 }
 
-.todo-meta {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-left: 8px;
+/* Категории (цветные бейджи) */
+.todo-category {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 40px;
+  background: rgba(255,255,255,0.1);
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
+.todo-category.personal { background: rgba(59,130,246,0.2); color: #60a5fa; }
+.todo-category.work { background: rgba(249,115,22,0.2); color: #fdba74; }
+.todo-category.study { background: rgba(34,197,94,0.2); color: #86efac; }
+
+/* Дедлайн */
+.todo-deadline {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.todo-deadline.overdue {
+  color: var(--danger);
+  font-weight: 500;
+}
+
+/* Кнопка удаления */
 .delete-btn {
   background: rgba(255,255,255,0.05);
   border: none;
@@ -403,7 +444,29 @@ body {
   color: white;
 }
 
-/* Нижняя панель (счётчик + очистить) */
+/* Форма редактирования (для даты и категории) */
+.edit-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: 36px;
+  margin-bottom: 8px;
+}
+
+.edit-input, .edit-deadline, .edit-category {
+  padding: 6px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.6);
+  color: white;
+  font-size: 13px;
+}
+
+.edit-category {
+  cursor: pointer;
+}
+
+/* Нижняя панель */
 .footer-panel {
   display: flex;
   justify-content: space-between;
@@ -427,7 +490,6 @@ body {
   border: none;
   font-size: 13px;
   cursor: pointer;
-  transition: all 0.2s;
 }
 
 .clear-completed:hover {
@@ -435,29 +497,11 @@ body {
   color: white;
 }
 
-/* Адаптив мобилки – всё читаемо */
+/* Мобильная адаптация */
 @media (max-width: 768px) {
-  .main-content {
-    padding: 16px;
-  }
-  .todo-card {
-    padding: 20px 16px;
-  }
-  .todo-item {
-    padding: 12px 12px;
-    gap: 8px;
-  }
-  .todo-meta {
-    display: none;
-  }
-  .delete-btn {
-    opacity: 0.6;
-  }
-  .filters li a {
-    padding: 4px 12px;
-    font-size: 13px;
-  }
-  .todo-count, .clear-completed {
-    font-size: 12px;
-  }
+  .main-content { padding: 16px; }
+  .todo-card { padding: 20px 16px; }
+  .todo-item { padding: 12px 12px; gap: 8px; }
+  .todo-deadline, .todo-category { display: none; }
+  .delete-btn { opacity: 0.6; }
 }

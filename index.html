@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="lib/todomvc-common-base.css">
   <link rel="stylesheet" href="lib/todomvc-app.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
 </head>
 <body>
   <canvas id="canvas-bg"></canvas>
@@ -24,7 +25,7 @@
       let ctx = canvas.getContext('2d');
       let width, height;
       let particles = [];
-      const symbols = ['✨', '⌨️', '⚡', '✧', '⟡', '●', '◯', '✶', '☄', '💻', '🖱️', '❄️', '🌀', '⎋', '⌘', '⭐', '🌀'];
+      const symbols = ['✨', '⌨️', '⚡', '✧', '⟡', '●', '◯', '✶', '☄', '💻', '🖱️', '❄️', '🌀', '⎋', '⌘', '⭐'];
       let mouseX = 0, mouseY = 0;
 
       function resize() {
@@ -92,7 +93,7 @@
     })();
 
     window.TASKFLOW_API_URL = window.TASKFLOW_API_URL || 'http://localhost:3000';
-    const model = { todos: [], hash: '#/' };
+    const model = { todos: [], hash: '#/', categoryFilter: 'all' };
     mountTaskFlow(model, 'app');
   </script>
 </body>
