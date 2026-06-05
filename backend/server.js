@@ -115,7 +115,7 @@ app.post('/api/auth/register', async (req, res, next) => {
   }
 });
 
-// Логин
+// Логин (основной обработчик для /api/auth/login)
 app.post('/api/auth/login', async (req, res, next) => {
   try {
     const email = normalizeEmail(req.body.email);
@@ -146,6 +146,42 @@ app.post('/api/auth/login', async (req, res, next) => {
     next(error);
   }
 });
+
+// ========== АЛИАС для старых запросов на /api/login ==========
+app.post('/api/login', async (req, res, next) => {
+  // Просто перенаправляем логику на основной обработчик, сохраняя контекст
+  // Можно скопировать код, но лучше переиспользовать: вызываем тот же обработчик,
+  // изменив url (не обязательно). Для простоты – копируем код из /api/auth/login.
+  try {
+    const email = normalizeEmail(req.body.email);
+    const password = String(req.body.password || '');
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    const result = await pool.query(
+      'SELECT id, email, password_hash FROM users WHERE email = $1',
+      [email]
+    );
+    const user = result.rows[0];
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    const passwordMatches = await bcrypt.compare(password, user.password_hash);
+    if (!passwordMatches) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    res.json({
+      token: createToken(user),
+      user: { id: user.id, email: user.email }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+// =============================================================
 
 // Получить все задачи пользователя
 app.get('/api/tasks', authMiddleware, async (req, res, next) => {
