@@ -92,7 +92,7 @@
       animate();
     })();
 
-    window.TASKFLOW_API_URL = window.TASKFLOW_API_URL || 'http://localhost:3000';
+    // Убираем установку window.TASKFLOW_API_URL, т.к. она не используется в taskflow-api.js
     const model = { todos: [], hash: '#/', categoryFilter: 'all' };
     mountTaskFlow(model, 'app');
   </script>
