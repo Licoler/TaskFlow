@@ -1,5 +1,4 @@
 # TaskFlow
-
 [![Maintainability](https://qlty.sh/gh/Licoler/projects/TaskFlow/maintainability.svg)](https://qlty.sh/gh/Licoler/projects/TaskFlow)
 
 TaskFlow is a full-stack todo app built from a vanilla JavaScript TodoMVC-style frontend and a Node.js API. Users can register, log in, and manage their own tasks through JWT-authenticated API requests backed by PostgreSQL.

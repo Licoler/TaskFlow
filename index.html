@@ -9,12 +9,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="lib/todomvc-common-base.css">
   <link rel="stylesheet" href="lib/todomvc-app.css">
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
 </head>
 <body>
   <canvas id="canvas-bg"></canvas>
   <div id="app"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
   <script src="lib/elmish.js"></script>
   <script src="lib/todo-app.js"></script>
   <script src="lib/taskflow-api.js"></script>
@@ -96,7 +96,6 @@
     const model = { todos: [], hash: '#/', categoryFilter: 'all' };
     mountTaskFlow(model, 'app');
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
   <div id="test-app"></div>
 </body>
 </html>
