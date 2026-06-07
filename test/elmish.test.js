@@ -1,15 +1,14 @@
-const test = require('tape');       // https://github.com/dwyl/learn-tape
-const fs = require('fs');           // read html files (see below)
-const path = require('path');       // so we can open files cross-platform
+const test = require('tape');       
+const fs = require('fs');           
+const path = require('path');      
 const elmish = require('../lib/elmish.js');
 const html = fs.readFileSync(path.resolve(__dirname, '../index.html'));
-require('jsdom-global')(html);   // https://github.com/rstacruz/jsdom-global
+require('jsdom-global')(html);  
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
-const id = 'test-app';              // all tests use separate root element
+const id = 'test-app';             
 
 test('elmish.empty("root") removes DOM elements from container', function (t) {
-  // setup the test div:
   const text = 'Hello World!'
   const divid = "mydiv";
   const root = document.getElementById(id);
@@ -18,20 +17,16 @@ test('elmish.empty("root") removes DOM elements from container', function (t) {
   const txt = document.createTextNode(text);
   div.appendChild(txt);
   root.appendChild(div);
-  // check text of the div:
   const actual = document.getElementById(divid).textContent;
   t.equal(actual, text, "Contents of mydiv is: " + actual + ' == ' + text);
   t.equal(root.childElementCount, 1, "Root element " + id + " has 1 child el");
-  // empty the root DOM node:
-  elmish.empty(root); // exercise the `empty` function!
+  elmish.empty(root); 
   t.equal(root.childElementCount, 0, "After empty(root) has 0 child elements!")
   t.end();
 });
 
 
 test('elmish.mount app expect state to be Zero', function (t) {
-  // use view and update from counter-reset example
-  // to confirm that our elmish.mount function is generic!
   const { view, update } = require('./counter.js');
 
   const root = document.getElementById(id);
@@ -41,14 +36,13 @@ test('elmish.mount app expect state to be Zero', function (t) {
     .replace('-Reset', ''), 10);
   const expected = 7;
   t.equal(expected, actual_stripped, "Inital state set to 7.");
-  // reset to zero:
   console.log('root', root);
-  const btn = root.getElementsByClassName("reset")[0]; // click reset button
-  btn.click(); // Click the Reset button!
+  const btn = root.getElementsByClassName("reset")[0]; 
+  btn.click(); 
   const state = parseInt(root.getElementsByClassName('count')[0]
     .textContent, 10);
-  t.equal(state, 0, "State is 0 (Zero) after reset."); // state reset to 0!
-  elmish.empty(root); // clean up after tests
+  t.equal(state, 0, "State is 0 (Zero) after reset."); 
+  elmish.empty(root); 
   t.end()
 });
 
@@ -61,13 +55,6 @@ test('elmish.add_attributes adds "autofocus" attribute', function (t) {
       document.createElement('input')
     )
   );
-  // document.activeElement via: https://stackoverflow.com/a/17614883/1148249
-  // t.deepEqual(document.getElementById('new'), document.activeElement,
-  //   '<input autofocus> is in "focus"');
-
-  // This assertion is commented because of a broking change in JSDOM see:
-  // https://github.com/dwyl/javascript-todo-list-tutorial/issues/29
-
   t.end();
 });
 
@@ -77,7 +64,6 @@ test('elmish.add_attributes applies HTML class attribute to el', function (t) {
   div.id = 'divid';
   div = elmish.add_attributes(["class=apptastic"], div);
   root.appendChild(div);
-  // test the div has the desired class:
   const nodes = document.getElementsByClassName('apptastic');
   t.equal(nodes.length, 1, "<div> has 'apptastic' CSS class applied");
   t.end();
@@ -93,7 +79,7 @@ test('elmish.add_attributes applies id HTML attribute to a node', function (t) {
   root.appendChild(el);
   const actual = document.getElementById('myid').textContent;
   t.equal(actual, text, "<section> has 'myid' id attribute");
-  elmish.empty(root); // clear the "DOM"/"state" before next test
+  elmish.empty(root);
   t.end();
 });
 
@@ -177,7 +163,6 @@ test('elmish.add_attributes checked=true on "done" item', function (t) {
   root.appendChild(input);
   const checked = document.getElementById('item1').checked;
   t.equal(checked, true, '<input type="checkbox" checked="checked">');
-  // test "checked=false" so we know we are able to "toggle" a todo item:
   root.appendChild(
     elmish.add_attributes(
       ["type=checkbox", "id=item2"],
@@ -196,42 +181,35 @@ test('elmish.add_attributes <a href="#/active">Active</a>', function (t) {
       document.createElement('a')
     )
   );
-  // note: "about:blank" is the JSDOM default "window.location.href"
   console.log('JSDOM window.location.href:', window.location.href);
-  // so when an href is set *relative* to this it becomes "about:blank#/my-link"
-  // so we *remove* it before the assertion below, but it works fine in browser!
   const href = document.getElementById('active').href.replace('about:blank', '')
   t.equal(href, "#/active", 'href="#/active" applied to "active" link');
   t.end();
 });
 
-/** DEFAULT BRANCH **/
 test('test default branch of elmish.add_attributes (no effect)', function (t) {
   const root = document.getElementById(id);
   let div = document.createElement('div');
   div.id = 'divid';
-  // "Clone" the div DOM node before invoking elmish.attributes to compare
   const clone = div.cloneNode(true);
   div = elmish.add_attributes(["unrecognised_attribute=noise"], div);
   t.deepEqual(div, clone, "<div> has not been altered");
   t.end();
 });
 
-/** null attrlist **/
 test('test elmish.add_attributes attrlist null (no effect)', function (t) {
   const root = document.getElementById(id);
   let div = document.createElement('div');
   div.id = 'divid';
-  // "Clone" the div DOM node before invoking elmish.attributes to compare
   const clone = div.cloneNode(true);
-  div = elmish.add_attributes(null, div); // should not "explode"
+  div = elmish.add_attributes(null, div); 
   t.deepEqual(div, clone, "<div> has not been altered");
   t.end();
 });
 
 test('elmish.append_childnodes append child DOM nodes to parent', function (t) {
   const root = document.getElementById(id);
-  elmish.empty(root); // clear the test DOM before!
+  elmish.empty(root); 
   let div = document.createElement('div');
   let p = document.createElement('p');
   let section = document.createElement('section');
@@ -246,10 +224,8 @@ test('elmish.section creates a <section> HTML element', function (t) {
   const text = 'Hello World!'
   const txt = document.createTextNode(text);
   p.appendChild(txt);
-  // create the `<section>` HTML element using our section function
   const section = elmish.section(["class=new-todo"], [p])
-  document.getElementById(id).appendChild(section); // add section with <p>
-  // document.activeElement via: https://stackoverflow.com/a/17614883/1148249
+  document.getElementById(id).appendChild(section); 
   t.equal(document.getElementById('para').textContent, text,
     '<section> <p>' + text + '</p></section> works as expected!');
   elmish.empty(document.getElementById(id));
@@ -259,18 +235,18 @@ test('elmish.section creates a <section> HTML element', function (t) {
 test('elmish create <header> view using HTML element functions', function (t) {
   const { append_childnodes, section, header, h1, text, input } = elmish;
   append_childnodes([
-    section(["class=todoapp"], [ // array of "child" elements
+    section(["class=todoapp"], [ 
       header(["class=header"], [
         h1([], [
           text("todos")
-        ]), // </h1>
+        ]), 
         input([
           "id=new",
           "class=new-todo",
           "placeholder=What needs to be done?",
           "autofocus"
-        ], []) // <input> is "self-closing"
-      ]) // </header>
+        ], [])
+      ]) 
     ])
   ], document.getElementById(id));
 
@@ -293,16 +269,16 @@ test('elmish create "main" view using HTML DOM functions', function (t) {
             input(["class=toggle", "type=checkbox", "checked=true"], []),
             label([], [text('Learn The Elm Architecture ("TEA")')]),
             button(["class=destroy"])
-          ]) // </div>
-        ]), // </li>
+          ]) 
+        ]), 
         li(["data-id=234"], [
           div(["class=view"], [
             input(["class=toggle", "type=checkbox"], []),
             label([], [text("Build TEA Todo List App")]),
             button(["class=destroy"])
-          ]) // </div>
-        ]) // </li>
-      ]) // </ul>
+          ]) 
+        ]) 
+      ]) 
     ])
   ], document.getElementById(id));
   const done = document.querySelectorAll('.completed')[0].textContent;
@@ -331,14 +307,13 @@ test('elmish create <footer> view using HTML DOM functions', function (t) {
         li([], [
           a(["href=#/completed"], [text("Completed")])
         ])
-      ]), // </ul>
+      ]), 
       button(["class=clear-completed", "style=display:block;"],
         [text("Clear completed")]
       )
     ])
   ], document.getElementById(id));
 
-  // count of items left:
   const left = document.getElementById('count').textContent;
   t.equal("1 item left", left, 'there is 1 (ONE) todo item left');
 
@@ -355,7 +330,6 @@ test('elmish.route updates the url hash and sets history', function (t) {
   console.log('START window.location.hash:', initial_hash, '(empty string)');
   const initial_history_length = window.history.length;
   console.log('START window.history.length:', initial_history_length);
-  // update the URL Hash and Set Browser History
   const state = { hash: '' };
   const new_hash = '#/active'
   const new_state = elmish.route(state, 'Active', new_hash);
@@ -372,9 +346,6 @@ test('elmish.route updates the url hash and sets history', function (t) {
   t.end();
 });
 
-// Testing localStorage requires "polyfil" because:
-// https://github.com/jsdom/jsdom/issues/1137 ¯\_(ツ)_/¯
-// globals are bad! but a "necessary evil" here ...
 global.localStorage = (
   global.localStorage &&
   typeof global.localStorage.getItem === 'function' &&
@@ -393,43 +364,32 @@ global.localStorage = (
  }
 }
 localStorage.removeItem('todos-elmish_' + id);
-// localStorage.setItem('hello', 'world!');
-// console.log('localStorage (polyfil) hello', localStorage.getItem('hello'));
 
-// // Test mount's localStorage using view and update from counter-reset example
-// // to confirm that our elmish.mount localStorage works and is "generic".
 test('elmish.mount sets model in localStorage', function (t) {
   const { view, update } = require('./counter.js');
   const root = document.getElementById(id);
 
   elmish.mount(7, update, view, id);
-  // the "model" stored in localStorage should be 7 now:
   t.equal(JSON.parse(localStorage.getItem('todos-elmish_' + id)), 7,
     "todos-elmish_store is 7 (as expected). initial state saved to localStorage.");
-  // test that mount still works as expected (check initial state of counter):
   const actual = document.getElementById(id).textContent;
   const actual_stripped = parseInt(actual.replace('+', '')
     .replace('-Reset', ''), 10);
   const expected = 7;
   t.equal(expected, actual_stripped, "Inital state set to 7.");
-  // attempting to "re-mount" with a different model value should not work
-  // because mount should retrieve the value from localStorage
-  elmish.mount(42, update, view, id); // model (42) should be ignored this time!
+  elmish.mount(42, update, view, id); 
 
   t.equal(JSON.parse(localStorage.getItem('todos-elmish_' + id)), 7,
     "todos-elmish_store is 7 (as expected). initial state saved to localStorage.");
-  // increment the counter
-  const btn = root.getElementsByClassName("inc")[0]; // click increment button
-  btn.click(); // Click the Increment button!
+  const btn = root.getElementsByClassName("inc")[0]; 
+  btn.click(); 
   const state = parseInt(root.getElementsByClassName('count')[0]
     .textContent, 10);
   t.equal(state, 8, "State is 8 after increment.");
-  // the "model" stored in localStorage should also be 8 now:
   t.equal(JSON.parse(localStorage.getItem('todos-elmish_' + id)), 8,
     "todos-elmish_store is 8 (as expected).");
-  elmish.empty(root); // reset the DOM to simulate refreshing a browser window
-  elmish.mount(5, update, view, id); // 5 ignored! read model from localStorage
-  // clearing DOM does NOT clear the localStorage (this is desired behaviour!)
+  elmish.empty(root); 
+  elmish.mount(5, update, view, id); 
   t.equal(JSON.parse(localStorage.getItem('todos-elmish_' + id)), 8,
     "todos-elmish_store still 8 from increment (above) saved in localStorage");
   localStorage.removeItem('todos-elmish_' + id);
@@ -439,12 +399,12 @@ test('elmish.mount sets model in localStorage', function (t) {
 test('elmish.add_attributes onclick=signal(action) events!', function (t) {
   const root = document.getElementById(id);
   elmish.empty(root);
-  let counter = 0; // global to this test.
-  function signal (action) { // simplified version of TEA "dispacher" function
+  let counter = 0; 
+  function signal (action) { 
     return function callback() {
       switch (action) {
         case 'inc':
-          counter++; // "mutating" ("impure") counters for test simplicity.
+          counter++; 
           break;
       }
     }
@@ -455,9 +415,7 @@ test('elmish.add_attributes onclick=signal(action) events!', function (t) {
       document.createElement('button'))
   );
 
-  // "click" the button!
   document.getElementById("btn").click()
-  // confirm that the counter was incremented by the onclick being triggered:
   t.equal(counter, 1, "Counter incremented via onclick attribute (function)!");
   elmish.empty(root);
   t.end();
@@ -468,35 +426,29 @@ test('subscriptions test using counter-reset-keyaboard ⌨️', function (t) {
   const { view, update, subscriptions } = require('./counter-reset-keyboard.js')
   const root = document.getElementById(id);
 
-  // mount the counter-reset-keyboard example app WITH subscriptions:
   elmish.mount(0, update, view, id, subscriptions);
 
-  // counter starts off at 0 (zero):
-  t.equal(parseInt(document.getElementById('count') // always fresh DOM node!
+  t.equal(parseInt(document.getElementById('count') 
     .textContent, 10), 0, "Count is 0 (Zero) at start.");
   t.equal(JSON.parse(localStorage.getItem('todos-elmish_' + id)), 0,
     "todos-elmish_store is 0 (as expected). initial state saved to localStorage.");
 
-  // trigger the [↑] (up) keyboard key to increment the counter:
-  document.dispatchEvent(new KeyboardEvent('keyup', {'keyCode': 38})); // up
+  document.dispatchEvent(new KeyboardEvent('keyup', {'keyCode': 38})); 
   t.equal(parseInt(document.getElementById('count')
     .textContent, 10), 1, "Up key press increment 0 -> 1");
   t.equal(JSON.parse(localStorage.getItem('todos-elmish_' + id)), 1,
     "todos-elmish_store 1 (as expected). incremented state saved to localStorage.");
 
-  // trigger the [↓] (down) keyboard key to increment the counter:
-  document.dispatchEvent(new KeyboardEvent('keyup', {'keyCode': 40})); // down
+  document.dispatchEvent(new KeyboardEvent('keyup', {'keyCode': 40})); 
   t.equal(parseInt(document.getElementById('count')
     .textContent, 10), 0, "Up key press dencrement 1 -> 0");
   t.equal(JSON.parse(localStorage.getItem('todos-elmish_' + id)), 0,
     "todos-elmish_store 0. keyboard down key decrement state saved to localStorage.");
 
-  // subscription keyCode trigger "branch" test (should NOT fire the signal):
   const clone = document.getElementById(id).cloneNode(true);
-  document.dispatchEvent(new KeyboardEvent('keyup', {'keyCode': 42})); //
+  document.dispatchEvent(new KeyboardEvent('keyup', {'keyCode': 42})); 
   t.deepEqual(document.getElementById(id), clone, "#" + id + " no change");
 
-  // default branch execution:
   document.getElementById('inc').click();
   t.equal(parseInt(document.getElementById('count')
     .textContent, 10), 1, "inc: 0 -> 1");

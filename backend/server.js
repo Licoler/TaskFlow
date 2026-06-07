@@ -25,7 +25,6 @@ const pool = new Pool({
   ssl: isLocalDb(databaseUrl) ? false : { rejectUnauthorized: false }
 });
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function isLocalDb(url) {
   return url.includes('localhost') || url.includes('127.0.0.1');
@@ -62,8 +61,6 @@ function toTask(row) {
   };
 }
 
-// ─── Middleware ───────────────────────────────────────────────────────────────
-
 app.use(cors({ origin: ALLOWED_ORIGINS, credentials: true }));
 app.use(express.json());
 app.use((req, _res, next) => {
@@ -84,8 +81,6 @@ function authMiddleware(req, res, next) {
     res.status(401).json({ error: 'Invalid or expired token' });
   }
 }
-
-// ─── Auth helpers ─────────────────────────────────────────────────────────────
 
 async function handleLogin(req, res, next) {
   try {
@@ -111,8 +106,6 @@ async function handleLogin(req, res, next) {
     next(err);
   }
 }
-
-// ─── Routes ───────────────────────────────────────────────────────────────────
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
@@ -144,7 +137,6 @@ app.post('/api/auth/register', async (req, res, next) => {
   }
 });
 
-// Both paths share the same handler — no duplication
 app.post('/api/auth/login', handleLogin);
 app.post('/api/login', handleLogin);
 
